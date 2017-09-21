@@ -1,9 +1,12 @@
 """
-A module designed to circumvent some of the shortcomings of the basic Python implementation of Selenium driver.
-This module passes reusable JavaScript snippets to the JavaScript engine powering Selenium.
+A module designed to circumvent some of the
+shortcomings of the basic Python implementation of Selenium driver.
+This module passes reusable JavaScript
+snippets to the JavaScript engine powering Selenium.
 
 
-Written for Python 3.6, 3.x and above is required for type and return annotations.
+Written for Python 3.6, 3.x and above
+is required for type and return annotations.
 -JoJo
 """
 
@@ -16,7 +19,9 @@ from selenium.webdriver.support.ui import Select
 from time import sleep
 
 
-def wait_for_element_clickable(driver: webdriver, identifier: str, element_type: By, time: int = 10) -> None:
+def wait_for_element_clickable(
+        driver: webdriver, identifier: str,
+        element_type: By, time: int = 10) -> None:
     """
     Wraps the verbose syntax for SeleniumWebdriverWait... for Python bindings.
     :param driver: A webdriver object.
@@ -26,7 +31,8 @@ def wait_for_element_clickable(driver: webdriver, identifier: str, element_type:
     :return: None.
     """
     try:
-        # waits for n seconds for element to be clickable, raises timeout if exceeded
+        # waits for n seconds for element to be
+        # clickable, raises timeout if exceeded
         WebDriverWait(driver, time).until(
             ec.element_to_be_clickable((element_type, identifier)))
     except TimeoutException:
@@ -34,7 +40,9 @@ def wait_for_element_clickable(driver: webdriver, identifier: str, element_type:
         # Define additional errors and catch behavior here
 
 
-def send_keys_to(driver: webdriver, identifier: str, element_type: By, keystrokes: str = '') -> None:
+def send_keys_to(
+        driver: webdriver, identifier: str,
+        element_type: By, keystrokes: str = '') -> None:
     """
 
     :param driver: A webdriver object.
@@ -44,13 +52,15 @@ def send_keys_to(driver: webdriver, identifier: str, element_type: By, keystroke
     :return: None.
     """
     # Checks to make sure we have something to send before executing
-    if keystrokes != '' and keystrokes != 'None' and type(keystrokes) is not None:
+    if keystrokes != '' and keystrokes != 'None' and\
+            type(keystrokes) is not None:
         # Something needs to be sent, so we will try to send it
         try:
             # clear the field first
             # Warning: If your element contains an onblur, this can trigger it
             driver.find_element(element_type, identifier).clear()
-            driver.find_element(element_type, identifier).send_keys(keystrokes)
+            driver.find_element(element_type, identifier)\
+                .send_keys(keystrokes)
 
         except NoSuchElementException:
             pass
@@ -60,10 +70,13 @@ def send_keys_to(driver: webdriver, identifier: str, element_type: By, keystroke
         # define pass behavior here
 
 
-def check_box_helper(driver: webdriver, identifier: str, element_type: By, check: str) -> None:
+def check_box_helper(
+        driver: webdriver, identifier: str,
+        element_type: By, check: str) -> None:
     """
     Helper method to check a checkbox. This is useful as shorthand,
-    and if a box is obscured as JavaScript will click under the obscuring element;
+    and if a box is obscured as JavaScript
+    will click under the obscuring element;
     Python binding would not.
     :param driver: webdriver object.
     :param identifier: unique identifier for your element.
@@ -73,7 +86,8 @@ def check_box_helper(driver: webdriver, identifier: str, element_type: By, check
     """
     if check.lower() == 'check':
         try:
-            # Find checkbox, expose Selenium object reference to JavaScript engine
+            # Find checkbox
+            # expose Selenium object reference to JavaScript engine
             checkbox = driver.find_element(element_type, identifier)
             driver.execute_script('arguments[0].click()', checkbox)
         except NoSuchElementException:
@@ -84,9 +98,11 @@ def check_box_helper(driver: webdriver, identifier: str, element_type: By, check
         # Define pass behavior, elif behavior here
 
 
-def generic_click_helper(driver: webdriver, identifier: str, element_type: By) -> None:
+def generic_click_helper(
+        driver: webdriver, identifier: str, element_type: By) -> None:
     """
-    A generic click on a desired element. Useful for onblurs or selecting elements.
+    A generic click on a desired element.
+    Useful for onblurs or selecting elements.
     :param driver: webdriver object.
     :param identifier: unique element id.
     :param element_type: XPATH, NAME, ID, etc.
@@ -101,7 +117,8 @@ def generic_click_helper(driver: webdriver, identifier: str, element_type: By) -
         # Define errors and catch behavior here
 
 
-def radio_button_helper(driver: webdriver, common_id: str, unique_id: str) -> None:
+def radio_button_helper(
+        driver: webdriver, common_id: str, unique_id: str) -> None:
     """
     Helper to deal with radio buttons which share NAME, ID attributes.
     :param driver: webdriver object.
@@ -112,15 +129,18 @@ def radio_button_helper(driver: webdriver, common_id: str, unique_id: str) -> No
 
     # build an xpath to locate element on page, execute through JS engine
     try:
-        # Builds and executes the xpath we need. Who said they were inflexible?
-        driver.execute_script('arguments[0].click()', driver.find_element(By.XPATH, ''.join(
-            ['//*[', common_id, ' and ', unique_id, ']'])))
+        # Builds and executes the xpath we need.
+        # Who said they were inflexible?
+        driver.execute_script('arguments[0].click()', driver.find_element(
+            By.XPATH, ''.join(
+                ['//*[', common_id, ' and ', unique_id, ']'])))
     except NoSuchElementException:
         pass
         # Define errors and catch behaviors here
 
 
-def dropdown_select_helper(driver: webdriver, by: By, identifier: str, value: str) -> None:
+def dropdown_select_helper(
+        driver: webdriver, by: By, identifier: str, value: str) -> None:
     """
 
     :param driver: webdriver object.
@@ -133,7 +153,8 @@ def dropdown_select_helper(driver: webdriver, by: By, identifier: str, value: st
     # make sure we're looking for something
     if value != '':
         try:
-            Select(driver.find_element(by, identifier)).select_by_visible_text(value)
+            Select(driver.find_element(by, identifier))\
+                .select_by_visible_text(value)
         except NoSuchElementException:
             pass
             # Define errors and behavior here
@@ -142,27 +163,35 @@ def dropdown_select_helper(driver: webdriver, by: By, identifier: str, value: st
         # Define pass behavior here
 
 
-def indexed_dropdown_select_helper(driver: webdriver, by: By, identifier: str, value: str, index: int) -> None:
+def indexed_dropdown_select_helper(
+        driver: webdriver, by: By, identifier: str,
+        value: str, index: int) -> None:
     """
-    Looks for a given element in a dropdown menu where the dropdown menu id is not unique.
-    This happens on JavaScript built pages or in bootstrap pages occasionally.
+    Looks for a given element in a dropdown menu where
+    the dropdown menu id is not unique.
+    This happens on JavaScript built pages
+    or in bootstrap pages occasionally.
     :param driver: webdriver object.
     :param by: By type.
     :param identifier: element identifier.
     :param value: value to search for.
-    :param index: index of list of non unique id dropdown list to search through.
+    :param index: index of list of non unique id dropdown list to search.
     :return:
     """
     if value != '':
         try:
-            Select(driver.find_elements(by, identifier)[index]).select_by_visible_text(value)
+            Select(
+                driver.find_elements(by, identifier)[index])\
+                .select_by_visible_text(value)
         except NoSuchElementException:
             pass
     else:
         pass
 
 
-def wait_for_new_window(driver: webdriver, seconds: int = 5, current_win_num: int = 1) -> bool:
+def wait_for_new_window(
+        driver: webdriver, seconds: int = 5,
+        current_win_num: int = 1) -> bool:
     """
     Waits for a new window to spawn.
     :param driver: webdriver object.
@@ -171,7 +200,8 @@ def wait_for_new_window(driver: webdriver, seconds: int = 5, current_win_num: in
     :return: None.
     """
     wait_counter = 0
-    while len(driver.window_handles) == current_win_num and wait_counter < seconds:
+    while len(driver.window_handles) == current_win_num and\
+            wait_counter < seconds:
         # wait for the new window
         sleep(1)
         wait_counter += 1
@@ -205,9 +235,12 @@ def switch_to_new_window(driver: webdriver, current_handle: str) -> None:
     driver.switch_to.window(desired_handle)
 
 
-def wait_for_javascript_load(driver: webdriver, action, element_type: By, identifier: str, wait: int = 10) -> None:
+def wait_for_javascript_load(
+        driver: webdriver, action, element_type: By,
+        identifier: str, wait: int = 10) -> None:
     """
-    Takes in an element ref to check for staleness to determine DOM modification or reload.
+    Takes in an element ref to check for staleness to
+    determine DOM modification or reload.
     :param driver: webdriver.
     :param action: action that causes reload of DOM or firing of JS script.
     :param element_type: By type.
@@ -217,7 +250,8 @@ def wait_for_javascript_load(driver: webdriver, action, element_type: By, identi
     """
 
     old_ref = driver.find_element(element_type, identifier)
-    action  # any drivver call such as driver.find_element(By.ID, 'saveButton').click()
+    action  # any drivver call such
+    # as driver.find_element(By.ID, 'saveButton').click()
     sleep(.5)  # hopefully avoid race condition
     print('beginning wait for page reload')
     try:
